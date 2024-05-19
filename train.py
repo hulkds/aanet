@@ -1,16 +1,16 @@
-import torch
-from torch.utils.data import DataLoader
-
 import argparse
-import numpy as np
 import os
 
-import nets
+import numpy as np
+import torch
+from clearml import Task
+from torch.utils.data import DataLoader
+
 import dataloader
+import model
+import nets
 from dataloader import transforms
 from utils import utils
-import model
-from clearml import Task
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -103,7 +103,7 @@ def main():
     torch.cuda.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    task = Task.init(project_name='aanet', task_name='aanet_base_experiment')
+    task = Task.init(project_name='aanet_depth_estimation', task_name='base_experiment')
 
     torch.backends.cudnn.benchmark = True
 

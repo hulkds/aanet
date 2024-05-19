@@ -19,6 +19,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python train.py \
 --highest_loss_only \
 --learning_rate 1e-4 \
 --milestones 400,600,800,900 \
---max_epoch 2 \
+--max_epoch 5 \
 --save_ckpt_freq 1 \
 --no_validate
