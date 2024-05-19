@@ -103,7 +103,7 @@ def main():
     torch.cuda.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    task = Task.init(project_name='aanet_depth_estimation', task_name='base_experiment')
+    task = Task.init(project_name='aanet_depth_estimation', task_name='first_experiment')
 
     torch.backends.cudnn.benchmark = True
 

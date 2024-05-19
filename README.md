@@ -65,6 +65,17 @@ We can also perform hyperparameters optimization remotely (ex: on clearml server
 
     `clearml-agent daemon --queue default`
 
+## Install ClearML Server on GCP
+You can also perform all the above tasks and save them on our own ClearML Server. You can enjoy the GCP start free version and then follow this document [Importing the custom image to your GCP account](https://clear.ml/docs/latest/docs/deploying_clearml/clearml_server_gcp#importing-the-custom-image-to-your-gcp-account) to import an image to GCP. Then you can create a VM (make sure to choose http/https protocol) based on this image, ssh into this VM and run:
+
+`docker-compose -f /opt/clearml/docker-compose.yml up -d`
+
+Make sure that the port 8080, 8008, 8081 are available because they are the default ClearML server service ports.
+
+Copy the external ip address and past it to your browser following the port you must see the ClearML server running.
+
+For example: `http://<external_ip>:8080`
+
 ## Encountered problem
 
 - When creating conda environment with official environment.yml:

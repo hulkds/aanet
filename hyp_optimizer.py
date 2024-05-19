@@ -68,6 +68,10 @@ hyp_optimizer = HyperParameterOptimizer(
     pool_period_min=30,
     # set the minimum number of iterations for an experiment, before early stopping.
     min_iteration_per_job=100,
+    # set the maximum number of iterations for an experiment
+    max_iteration_per_job=10000,
+    # set total max job
+    total_max_jobs=100
 )
 
 # if we are running as a service, just enqueue ourselves into the services queue and let it run the optimization
