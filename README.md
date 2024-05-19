@@ -1,163 +1,105 @@
-# AANet
+# AANet with ClearML
 
-PyTorch implementation of our paper: 
+Test AANet training with ClearML.
+More information on AANet can be found [here](README_official.md)
 
-**[AANet: Adaptive Aggregation Network for Efficient Stereo Matching](https://arxiv.org/abs/2004.09548)**, [CVPR 2020](http://cvpr2020.thecvf.com/)
-
-Authors: [Haofei Xu](https://haofeixu.github.io/) and [Juyong Zhang](http://staff.ustc.edu.cn/~juyong/)
-
-**11/15/2022 Update: Check out our new work: [Unifying Flow, Stereo and Depth Estimation](https://haofeixu.github.io/unimatch/) and code: [unimatch](https://github.com/autonomousvision/unimatch) for performing stereo matching with our new GMStereo model. The CUDA op in AANet is no longer required. [10 pretrained GMStereo models](https://github.com/autonomousvision/unimatch/blob/master/MODEL_ZOO.md) with different speed-accuracy trade-offs are also released. Check out our [Colab](https://colab.research.google.com/drive/1r5m-xVy3Kw60U-m5VB-aQ98oqqg_6cab?usp=sharing) and [HuggingFace](https://huggingface.co/spaces/haofeixu/unimatch) demo to play with GMStereo in your browser!**
-
-We propose a sparse points based intra-scale cost aggregation (ISA) module and a cross-scale cost aggregation (CSA) module for efficient and accurate stereo matching. 
-
-The implementation of improved version **AANet+ (stronger performance & slightly faster speed)** is also included in this repo.
-
-<p align="center"><img width=80% src="assets/overview.png"></p>
-
-## Highlights
-
-- **Modular design**
-
-  We decompose the end-to-end stereo matching framework into five components: 
-
-  **feature extraction**, **cost volume construction**, **cost aggregation**, **disparity computation** and **disparity refinement.** 
-
-  One can easily construct a customized stereo matching model by combining different components.
-
-- **High efficiency**
-
-  Our method can run at **60ms** for a KITTI stereo pair (384x1248 resolution)!
-
-- **Full framework**
-
-  All codes for training, validating, evaluating, inferencing and predicting on any stereo pair are provided!
-
-## Installation
-
-Our code is based on PyTorch 1.2.0, CUDA 10.0 and python 3.7. 
-
-We recommend using [conda](https://www.anaconda.com/distribution/) for installation: 
-
-```shell
-conda env create -f environment.yml
-```
-
-After installing dependencies, build deformable convolution:
-
-```shell
-cd nets/deform_conv && bash build.sh
-```
-
-## Dataset Preparation
-
-Download [Scene Flow](https://lmb.informatik.uni-freiburg.de/resources/datasets/SceneFlowDatasets.en.html), [KITTI 2012](http://www.cvlibs.net/datasets/kitti/eval_stereo_flow.php?benchmark=stereo) and [KITTI 2015](http://www.cvlibs.net/datasets/kitti/eval_scene_flow.php?benchmark=stereo) datasets. 
-
-Our folder structure is as follows:
-
+For this test you can use pretrained model on KITTI2015 dataset to finetune on KITTI2012 dataset. The folder structure is simplified as follows:
 ```
 data
 ├── KITTI
 │   ├── kitti_2012
 │   │   └── data_stereo_flow
-│   ├── kitti_2015
-│   │   └── data_scene_flow
-└── SceneFlow
-    ├── Driving
-    │   ├── disparity
-    │   └── frames_finalpass
-    ├── FlyingThings3D
-    │   ├── disparity
-    │   └── frames_finalpass
-    └── Monkaa
-        ├── disparity
-        └── frames_finalpass
+pretrained
+├── aanet_kitti15-fb2a0d23.pth
 ```
+Pretrained model can be downloaded [here](MODEL_ZOO.md). 
 
-If you would like to use the pseudo ground truth supervision introduced in our paper, you can download the pre-computed disparity on KITTI 2012 and KITTI 2015 training set here: [KITTI 2012](https://drive.google.com/open?id=1ZJhraqgY1sL4UfHBrVojttCbvNAXfdj0), [KITTI 2015](https://drive.google.com/open?id=14NGQp9CwIVNAK8ZQ6GSNeGraFGtVGOce). 
+KITTI2012 dataset can be found here [KITTI 2012](http://www.cvlibs.net/datasets/kitti/eval_stereo_flow.php?benchmark=stereo). You can also download the pseudo ground truth supervision introduced in AANet paper here [KITTI 2012](https://drive.google.com/open?id=1ZJhraqgY1sL4UfHBrVojttCbvNAXfdj0) and put it in `kitti_2012/data_stereo_flow/training` directory. 
 
-For KITTI 2012, you should place the unzipped file `disp_occ_pseudo_gt` under `kitti_2012/data_stereo_flow/training` directory. 
+## Installation
 
-For KITTI 2015, you should place `disp_occ_0_pseudo_gt` under `kitti_2015/data_scene_flow/training`.
+1. Create and activate conda environment
 
-It is recommended to symlink your dataset root to `$AANET/data`:
+    `conda env create -f environment.yml`
 
-```shell
-ln -s $YOUR_DATASET_ROOT data
-```
+    `conda activate aanetenv`
+2. Build deformable convolution:
 
-Otherwise, you may need to change the corresponding paths in the scripts.
+    `cd nets/deform_conv`
 
-## Model Zoo
+    `bash build.sh`
 
-All pretrained models are available in the [model zoo](MODEL_ZOO.md).
+## Training with clearml
 
-We assume the downloaded weights are located under the `pretrained` directory. 
+1. Following this document to install clearml [local python](https://clear.ml/docs/latest/docs/getting_started/ds/ds_first_steps#local-python)
 
-Otherwise, you may need to change the corresponding paths in the scripts.
+2. Run training script
 
-## Inference
+    `bash scripts/aanet_train.sh`
+    
+    Training experiment will be logged on Clearml server with [Clearml Web UI](https://clear.ml/docs/latest/docs/webapp/webapp_overview/)
 
-To generate prediction results on the test set of Scene Flow and KITTI dataset, you can run [scripts/aanet_inference.sh](scripts/aanet_inference.sh). 
+## Hyperparameters Opimization with Clearml
 
-The inference results on KITTI dataset can be directly submitted to the online evaluation server for benchmarking.
+After running the first train baseline, we can now perform hyperparameters optimization based on the first training.
 
-## Prediction
+The configuration file for hyperparameters optimization is found here [hyp_optimizer_config](hyp_optimizer_config.py). The important thing is `template_task_id` (can be found on Clearml Web UI), Clearml will perform the optimization based on this.
 
-We also support predicting on any rectified stereo pairs. [scripts/aanet_predict.sh](scripts/aanet_predict.sh) provides an example usage.
+If using Optuna optimizer, we need to install optuna:
 
-## Training
+`pip install optuna`
 
-All training scripts on Scene Flow and KITTI datasets are provided in [scripts/aanet_train.sh](scripts/aanet_train.sh). 
+We can now perform hyperparameters optimization LOCALLY:
 
-Note that we use 4 NVIDIA V100 GPUs (32G) with batch size 64 for training, you may need to tune the batch size according to your hardware. 
+`python3 hyp_optimizer.py`
 
-We support using tensorboard to monitor and visualize the training process. You can first start a tensorboard session with
+We can also perform hyperparameters optimization remotely (ex: on clearml server) using [Clearml Agent](https://clear.ml/docs/latest/docs/clearml_agent) by uncomment this [line](hyp_optimizer.py#L81) and:
 
-```shell
-tensorboard --logdir checkpoints
-```
+1. Following this [document](https://clear.ml/docs/latest/docs/clearml_agent/) to install and configure clearml-agent.
 
-and then access [http://localhost:6006](http://localhost:6006) in your browser.
+2. Run hyperparameters optimization, this will enqueue all the tasks but not run the tasks:
 
-- **How to train on my own data?**
+    `python3 hyp_optimizer.py`
 
-  You can first generate a filename list by creating a data reading function in [filenames/generate_filenames.py](filenames/generate_filenames.py) (an example on KITTI dataset is provided), and then create a new dataset dictionary in [dataloader/dataloader.py](dataloader/dataloader.py).
+3. Run clearml-agent to execute enqueued tasks:
 
-- **How to develop new components?**
+    `clearml-agent daemon --queue default`
 
-  Our framework is flexible to develop new components, e.g., new feature extractor, cost aggregation module or refinement architecture. You can 1) create a new file (e.g., `my_aggregation.py`) under `nets` directory, 2) import the module in `nets/aanet.py` and 3) use it in the model definition.
+## Encountered problem
 
-## Evaluation
+- When creating conda environment with official environment.yml:
+    ``` 
+    Solving environment: failed
+    ResolvePackageNotFound: 
+    - torchvision==0.4.0=py37_cu100
+    - pytorch==1.2.0=py3.7_cuda10.0.130_cudnn7.6.2_0
+    - openssl==1.1.1=h7b6447c_0 
+    ```
+    New environment.yml have been simplified in this [commit](https://github.com/hulkds/aanet/commit/9668946700ca27d4703cb5536f8336d797de43d1).
 
-To enable fast experimenting, evaluation runs on-the-fly without saving the intermediate results. 
+- When building deformable convolution:
+    ``` 
+    error: command '/usr/local/cuda/bin/nvcc' failed with exit status 1
+    ```
+    This is because cudatoolkit version installed in conda environment is not compatible with gcc and g++ version.
+    
+    To fix this we can install gcc-9 and g++-9 and enable auto mode:
+    
+    `sudo apt install gcc-9 g++-9`
 
-We provide two types of evaluation setting:
+    `sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60`
 
-- After training, evaluate the model with best validation results
-- Evaluate a pretrained model
+    `sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 60`
 
-Check [scripts/aanet_evaluate.sh](scripts/aanet_evaluate.sh) for an example usage.
+    `sudo update-alternatives --auto gcc`
 
-## Citation
+    `sudo update-alternatives --auto g++`
 
-If you find our work useful in your research, please consider citing our paper:
+    /!\ Maybe you also need to remove gcc-11 and g++-11
 
-```
-@inproceedings{xu2020aanet,
-  title={AANet: Adaptive Aggregation Network for Efficient Stereo Matching},
-  author={Xu, Haofei and Zhang, Juyong},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={1959--1968},
-  year={2020}
-}
-```
-
-
-## Acknowledgements
-
-Part of the code is adopted from previous works: [PSMNet](https://github.com/JiaRenChang/PSMNet), [GwcNet](https://github.com/xy-guo/GwcNet) and [GA-Net](https://github.com/feihuzhang/GANet). We thank the original authors for their awesome repos. The deformable convolution op is taken from [mmdetection](https://github.com/open-mmlab/mmdetection). The FLOPs counting code is modified from [pytorch-OpCounter](https://github.com/Lyken17/pytorch-OpCounter). The code structure is partially inspired by [mmdetection](https://github.com/open-mmlab/mmdetection) and our previous work [rdn4depth](https://github.com/haofeixu/rdn4depth).
-
-
-
-
-
+## Useful link
+- https://github.com/pytorch/pytorch/blob/main/RELEASE.md
+- https://celikmustafa89.medium.com/python-torch-and-torchvision-compatibility-list-305ad80b243f
+- https://stackoverflow.com/questions/6622454/cuda-incompatible-with-my-gcc-version
+- https://discuss.pytorch.org/t/build-error-in-pytorch-vision/135379/5
+- https://github.com/pytorch/pytorch/releases
