@@ -114,3 +114,9 @@ For example: `http://<external_ip>:8080`
 - https://stackoverflow.com/questions/6622454/cuda-incompatible-with-my-gcc-version
 - https://discuss.pytorch.org/t/build-error-in-pytorch-vision/135379/5
 - https://github.com/pytorch/pytorch/releases
+- https://github.com/allegroai/clearml/blob/master/examples/optimization/hyper-parameter-optimization/hyper_parameter_optimizer.py
+- https://github.com/allegroai/clearml/blob/master/examples/frameworks/pytorch/pytorch_mnist.py
+- https://www.cvlibs.net/publications/Menze2015CVPR.pdf
+- https://github.com/allegroai/clearml-server/blob/master/docs/install_gcp.md
+- https://github.com/allegroai/clearml-server/blob/master/docs/faq.md#web-auth
+- https://clear.ml/docs/latest/docs/faq/#port-conflict
